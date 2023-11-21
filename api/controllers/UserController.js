@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 // Create a new user
 const createUser = async (req, res) => {
     try {
-        const { username } = req.body;
+        const { username, email } = req.body;
         const user = await prisma.user.create({
-            data: { username },
+            data: { username, email },
         });
         res.status(201).json(user);
     } catch (error) {

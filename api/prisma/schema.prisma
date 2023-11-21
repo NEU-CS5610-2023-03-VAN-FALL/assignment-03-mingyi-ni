@@ -7,27 +7,30 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
 }
 
 model User {
   id       Int      @id @default(autoincrement())
   username String
+  email String
   reviews  Review[]
 }
 
 model Review {
   id      Int     @id @default(autoincrement())
-  content String
-  userId  Int
-  movieId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content     String   @db.VarChar(255)
   user    User    @relation(fields: [userId], references: [id])
   movie   Movie   @relation(fields: [movieId], references: [id])
+  userId  Int
+  movieId Int
 }
 
 model Movie {
   id       Int      @id @default(autoincrement())
   title    String
+  link String
   // Add more attributes as needed
   reviews  Review[]
 }
