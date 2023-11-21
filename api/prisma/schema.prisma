@@ -26,7 +26,8 @@ model Review {
 }
 
 model Movie {
-  id     Int     @id @default(autoincrement())
-  title  String
-  reviews Review[]
+  id       Int      @id @default(autoincrement())
+  title    String
+  // Add more attributes as needed
+  reviews  Review[]
 }
