@@ -7,7 +7,7 @@ const reviewRoutes = require('./routes/reviewRoutes'); // Replace with your actu
 const userRoutes = require('./routes/userRoutes'); // Replace with your actual routes
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(bodyParser.json());
