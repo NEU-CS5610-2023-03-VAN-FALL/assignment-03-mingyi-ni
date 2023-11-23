@@ -5,7 +5,7 @@ const App = () => {
     const [movies, setMovies] = useState([]);
 
     const getMovieRequest = async () => {
-        const url = `http://www.omdbapi.com/?s=star war&apikey=263d22d8`;
+        const url = `http://www.omdbapi.com/?s=marvel&apikey=263d22d8`;
 
         const response = await fetch(url);
         const responseJson = await response.json();
@@ -20,8 +20,11 @@ const App = () => {
     }, []);
 
     return (
-        <div className='container-fluid movie-app'>
-            <div className='row'>
+        <div className="movie-app">
+            <header>
+                <h1 className="app-title">Marvel Movies</h1>
+            </header>
+            <div className="container">
                 <MovieList movies={movies} />
             </div>
         </div>
