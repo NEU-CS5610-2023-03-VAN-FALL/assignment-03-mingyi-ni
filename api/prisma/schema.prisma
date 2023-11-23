@@ -30,7 +30,7 @@ model Review {
 model Movie {
   id       Int      @id @default(autoincrement())
   title    String
-  link String
+  imdbId String
   // Add more attributes as needed
   reviews  Review[]
 }

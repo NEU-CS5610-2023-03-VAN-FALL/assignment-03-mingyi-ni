@@ -33,7 +33,7 @@ const getMovieById = async (req, res) => {
     try {
         const { id } = req.params;
         const movie = await prisma.movie.findUnique({
-            where: { id: parseInt(id) },
+            where: { imdbId: id },
         });
 
         if (!movie) {
