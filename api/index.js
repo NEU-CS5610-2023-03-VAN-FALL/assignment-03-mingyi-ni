@@ -12,6 +12,10 @@ const PORT = process.env.PORT || 8000;
 // Middleware
 app.use(bodyParser.json());
 
+app.get("/ping", (req, res) => {
+    res.send("pong");
+});
+
 // Routes
 app.use('/movies', movieRoutes);
 app.use('/reviews', reviewRoutes);
