@@ -29,8 +29,8 @@ model Review {
 
 model Movie {
   id       Int      @id @default(autoincrement())
-  title    String
-  imdbId String
+  title    String?
+  imdbId String @unique
   // Add more attributes as needed
   reviews  Review[]
 }
