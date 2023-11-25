@@ -41,7 +41,7 @@ const MovieDetailPage = () => {
         };
 
         fetchMovieDetails();
-        fetchMovieReviews();
+        //fetchMovieReviews();
     }, [movieId]);
 
     const handleReviewSubmit = async () => {

@@ -6,10 +6,13 @@ import LoginPage from './components/LoginPage';
 import ProfilePage from './components/ProfilePage';
 import AuthDebuggerPage from './components/AuthDebuggerPage';
 import MovieDetailPage from './components/MovieDetailPage';
+import TopMenu from './components/TopMenu'; // Import the TopMenu component
 
 const AppRouter = () => {
     return (
         <Router>
+            {/* Include the TopMenu component for a consistent top menu */}
+            <TopMenu />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
