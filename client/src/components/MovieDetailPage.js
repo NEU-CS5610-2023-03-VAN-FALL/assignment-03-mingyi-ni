@@ -11,6 +11,10 @@ const MovieDetailPage = () => {
     const [userReview, setUserReview] = useState('');
     const [reviews, setReviews] = useState([]);
     const navigate = useNavigate();
+    const [modifiedReviewContent, setModifiedReviewContent] = useState('');
+    const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+
+
 
     const isCurrentUser = (review) => {
         return isAuthenticated && user.sub === review.user.auth0Id;
@@ -123,8 +127,36 @@ const MovieDetailPage = () => {
         }
     };
 
-    const handleReviewModify = async (review) => {
+    const handleReviewModify = (review) => {
+        // Open the modify modal and pre-fill the input with the current review content
+        setIsModifyModalOpen(true);
+        setModifiedReviewContent(review.content);
+    };
 
+    const handleModifySubmit = async (review) => {
+        try {
+            const token = await getAccessTokenSilently();
+            // Send a request to your API to update the review content
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews/${review.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, // Include the user's access token
+                },
+                body: JSON.stringify({ content: modifiedReviewContent }),
+            });
+
+            if (response.ok) {
+                // If the update is successful, close the modify modal and update the review content
+                setIsModifyModalOpen(false);
+                await fetchMovieReviews();
+            } else {
+                // Handle error cases, e.g., show an error message
+                console.error('Error updating review:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+        }
     };
 
     if (!movie) {
@@ -175,6 +207,30 @@ const MovieDetailPage = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {isModifyModalOpen && (
+                                <div className="card bg-dark text-white mb-3">
+                                    <div className="card-body">
+                                        <div className="mb-3">
+                                            <label htmlFor="modifiedReview" className="form-label">
+                                                Modified Review:
+                                            </label>
+                                            <textarea
+                                                id="modifiedReview"
+                                                className="form-control"
+                                                value={modifiedReviewContent}
+                                                onChange={(e) => setModifiedReviewContent(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <button className="btn btn-primary" onClick={() => handleModifySubmit(review)}>
+                                                Save Modification
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     ))}
                 </div>

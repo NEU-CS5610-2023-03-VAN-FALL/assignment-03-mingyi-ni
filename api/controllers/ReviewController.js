@@ -111,6 +111,8 @@ const getReviews = async (req, res) => {
 
 // Update a review by ID
 const updateReview = async (req, res) => {
+    const auth0Id = req.auth.payload.sub;
+
     try {
         const { id } = req.params;
         const { content } = req.body;
