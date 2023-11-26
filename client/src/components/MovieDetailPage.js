@@ -99,6 +99,33 @@ const MovieDetailPage = () => {
         }
     };
 
+    const handleReviewDelete = async (review) => {
+        try {
+            // Send a request to your API to delete the review
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews/${review.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, // Include the user's access token
+                },
+            });
+
+            if (response.ok) {
+                // If the deletion is successful, trigger the onDeleteReview callback
+                await fetchMovieReviews();
+            } else {
+                // Handle error cases, e.g., show an error message
+                console.error('Error deleting review:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error deleting review:', error);
+        }
+    };
+
+    const handleReviewModify = async (review) => {
+
+    };
 
     if (!movie) {
         return <div>Loading...</div>; // Add loading state if needed
@@ -137,8 +164,14 @@ const MovieDetailPage = () => {
                                 <p className="card-text">{review.content}</p>
                                 {isCurrentUser(review) && (
                                     <div>
-                                        <button className="btn btn-primary ml-2">Modify</button>
-                                        <button className="btn btn-danger">Delete</button>
+                                        <button className="btn btn-primary ml-2"
+                                                onClick={() =>handleReviewModify(review)}>
+                                            Modify
+                                        </button>
+                                        <button className="btn btn-danger"
+                                                onClick={() => handleReviewDelete(review)}>
+                                            Delete
+                                        </button>
                                     </div>
                                 )}
                             </div>

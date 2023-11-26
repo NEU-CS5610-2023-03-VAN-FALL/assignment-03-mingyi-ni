@@ -15,6 +15,6 @@ router.get('/', requireAuth, ReviewController.getReviews);
 router.get('/movie/:movieId', ReviewController.getReviewsByMovie); // New route
 router.get('/user/:userId', ReviewController.getReviewsByUser);
 router.put('/:id', ReviewController.updateReview);
-router.delete('/:id', ReviewController.deleteReview);
+router.delete('/:id', requireAuth, ReviewController.deleteReview);
 
 module.exports = router;
