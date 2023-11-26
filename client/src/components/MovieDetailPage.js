@@ -23,12 +23,12 @@ const MovieDetailPage = () => {
         const fetchMovieReviews = async () => {
             try {
                 // Check if the movie exists in the local database
-                const movieResponse = await fetch(`http://localhost:8000/movies/${movieId}`);
+                const movieResponse = await fetch(`${process.env.REACT_APP_API_URL}/${movieId}`);
                 const movieExists = await movieResponse.ok;
 
                 if (movieExists) {
                     // If the movie exists, fetch its reviews
-                    const reviewsResponse = await fetch(`http://localhost:8000/movies/${movieId}/reviews`);
+                    const reviewsResponse = await fetch(`${process.env.REACT_APP_API_URL}/${movieId}/reviews`);
                     const reviewsData = await reviewsResponse.json();
                     setReviews(reviewsData);
                 } else {
@@ -41,7 +41,7 @@ const MovieDetailPage = () => {
         };
 
         fetchMovieDetails();
-        //fetchMovieReviews();
+        fetchMovieReviews();
     }, [movieId]);
 
     const handleReviewSubmit = async () => {

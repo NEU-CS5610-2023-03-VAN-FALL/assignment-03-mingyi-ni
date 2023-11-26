@@ -10,10 +10,10 @@ generator client {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  username String
-  email String
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
   auth0Id      String   @unique @default("")
+  name         String?
   reviews  Review[]
 }
 

@@ -5,7 +5,6 @@ const router = express.Router();
 const UserController = require('../controllers/UserController');
 
 // CRUD operations for users
-router.post('/', UserController.createUser);
 router.get('/', UserController.getUsers);
 router.put('/:id', UserController.updateUser);
 router.delete('/:id', UserController.deleteUser);

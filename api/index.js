@@ -1,11 +1,15 @@
 // index.js
-import { auth } from  'express-oauth2-jwt-bearer'
-
+require('dotenv').config();
+const cors = require('cors');
+const morgan = require('morgan');
+const { auth } = require('express-oauth2-jwt-bearer');
 const express = require('express');
 const bodyParser = require('body-parser');
 const movieRoutes = require('./routes/movieRoutes'); // Replace with your actual routes
 const reviewRoutes = require('./routes/reviewRoutes'); // Replace with your actual routes
 const userRoutes = require('./routes/userRoutes'); // Replace with your actual routes
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const requireAuth = auth({
     audience: process.env.AUTH0_AUDIENCE,
@@ -17,15 +21,23 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(cors());
+app.use(morgan("dev"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.get("/ping", (req, res) => {
+    console.log("pong");
     res.send("pong");
 });
 app.post("/verify-user", requireAuth, async (req, res) => {
+    console.log("verifying user");
     const auth0Id = req.auth.payload.sub;
     const email = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/email`];
     const name = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/name`];
+    console.log(auth0Id);
+    console.log(email);
+    console.log(name);
 
     const user = await prisma.user.findUnique({
         where: {
