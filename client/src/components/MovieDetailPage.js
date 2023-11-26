@@ -1,62 +1,96 @@
 // MovieDetailPage.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from "react-router-dom";
 
 const MovieDetailPage = () => {
+    const { user, isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
     const [userReview, setUserReview] = useState('');
     const [reviews, setReviews] = useState([]);
+    const navigate = useNavigate();
+
+    const isCurrentUser = (review) => {
+        return isAuthenticated && user.sub === review.user.auth0Id;
+    };
+
+    const fetchMovieDetails = async () => {
+        try {
+            const response = await fetch(`http://www.omdbapi.com/?apikey=bc9a94cb&i=${movieId}`);
+            const movieData = await response.json();
+            setMovie(movieData);
+        } catch (error) {
+            console.error('Error fetching movie details:', error);
+        }
+    };
+
+    // Fetch reviews for the movie from your backend
+    const fetchMovieReviews = async () => {
+        try {
+            // Check if the movie exists in the local database
+            const movieResponse = await fetch(`${process.env.REACT_APP_API_URL}/movies/${movieId}`);
+            const movieExists = movieResponse.ok;
+            const movieData = await movieResponse.json();
+
+            if (movieExists) {
+                // If the movie exists, fetch its reviews
+                const reviewsResponse = await fetch(`${process.env.REACT_APP_API_URL}/reviews/movie/${movieData.id}`);
+                const reviewsData = await reviewsResponse.json();
+                setReviews(reviewsData);
+            } else {
+                // If the movie doesn't exist, set reviews to an empty array
+                setReviews([]);
+            }
+        } catch (error) {
+            console.error('Error fetching movie reviews:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchMovieDetails = async () => {
-            try {
-                const response = await fetch(`http://www.omdbapi.com/?apikey=bc9a94cb&i=${movieId}`);
-                const movieData = await response.json();
-                setMovie(movieData);
-            } catch (error) {
-                console.error('Error fetching movie details:', error);
-            }
-        };
-
-        // Fetch reviews for the movie from your backend
-        const fetchMovieReviews = async () => {
-            try {
-                // Check if the movie exists in the local database
-                const movieResponse = await fetch(`${process.env.REACT_APP_API_URL}/${movieId}`);
-                const movieExists = await movieResponse.ok;
-
-                if (movieExists) {
-                    // If the movie exists, fetch its reviews
-                    const reviewsResponse = await fetch(`${process.env.REACT_APP_API_URL}/${movieId}/reviews`);
-                    const reviewsData = await reviewsResponse.json();
-                    setReviews(reviewsData);
-                } else {
-                    // If the movie doesn't exist, set reviews to an empty array
-                    setReviews([]);
-                }
-            } catch (error) {
-                console.error('Error fetching movie reviews:', error);
-            }
-        };
-
         fetchMovieDetails();
         fetchMovieReviews();
     }, [movieId]);
 
     const handleReviewSubmit = async () => {
+        if(!isAuthenticated){
+            await loginWithRedirect({
+                appState: {returnTo: window.location.pathname},
+            });
+            return;
+        }
         try {
-            // Replace with your actual endpoint for submitting reviews
-            await fetch(`http://localhost:8000/movies/${movieId}/reviews`, {
+            const token = await getAccessTokenSilently();
+            // Create the movie first
+            const movieResponse = await fetch(`${process.env.REACT_APP_API_URL}/movies`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: userReview }),
+                body: JSON.stringify({ title: movie.Title, imdbId: movie.imdbID }), // Add the necessary movie information
+            });
+
+            if (!movieResponse.ok) {
+                throw new Error('Failed to create the movie');
+            }
+
+            // Get the created movie from the response
+            const movieData = await movieResponse.json();
+            const movieId = movieData.id; // Adjust this based on your actual movie ID field
+
+            // Create the review with the movie ID
+            await fetch(`${process.env.REACT_APP_API_URL}/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ content: userReview, movieId }),
             });
 
             // Refresh reviews after submitting a new one
-            fetchMovieReviews();
+            await fetchMovieReviews();
 
             // Clear the review input
             setUserReview('');
@@ -64,6 +98,7 @@ const MovieDetailPage = () => {
             console.error('Error submitting review:', error);
         }
     };
+
 
     if (!movie) {
         return <div>Loading...</div>; // Add loading state if needed
@@ -91,15 +126,27 @@ const MovieDetailPage = () => {
                 </div>
             </div>
 
-            <h3>User Reviews</h3>
             <div>
-                {/* Display existing reviews */}
-                {reviews.map((review) => (
-                    <div key={review.id} className="mb-3">
-                        <p>{review.user.username}: {review.content}</p>
-                    </div>
-                ))}
+                <h3 className="text-white">User Reviews</h3>
+                <div>
+                    {/* Display existing reviews */}
+                    {reviews.map((review) => (
+                        <div key={review.id} className="card mb-3" style={{ backgroundColor: '#333', color: '#fff' }}>
+                            <div className="card-body">
+                                <h5 className="card-title text-primary">{review.user.name}</h5>
+                                <p className="card-text">{review.content}</p>
+                                {isCurrentUser(review) && (
+                                    <div>
+                                        <button className="btn btn-primary ml-2">Modify</button>
+                                        <button className="btn btn-danger">Delete</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
+
 
             {/* Add a form for users to submit reviews */}
             <form className="mt-3">

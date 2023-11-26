@@ -6,6 +6,7 @@ import VerifyUser from './components/VerifyUser';
 import ProfilePage from './components/ProfilePage';
 import AuthDebuggerPage from './components/AuthDebuggerPage';
 import MovieDetailPage from './components/MovieDetailPage';
+import UserReviewPage from './components/UserReviewPage';
 import TopMenu from './components/TopMenu'; // Import the TopMenu component
 
 const AppRouter = () => {
@@ -19,6 +20,7 @@ const AppRouter = () => {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/auth-debugger" element={<AuthDebuggerPage />} />
                 <Route path="/movie/:movieId" element={<MovieDetailPage />} />
+                <Route path="/reviews" element={<UserReviewPage />} />
             </Routes>
         </Router>
     );

@@ -31,13 +31,9 @@ app.get("/ping", (req, res) => {
     res.send("pong");
 });
 app.post("/verify-user", requireAuth, async (req, res) => {
-    console.log("verifying user");
     const auth0Id = req.auth.payload.sub;
     const email = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/email`];
     const name = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/name`];
-    console.log(auth0Id);
-    console.log(email);
-    console.log(name);
 
     const user = await prisma.user.findUnique({
         where: {

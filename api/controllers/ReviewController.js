@@ -1,16 +1,64 @@
+
 // controllers/ReviewController.js
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+
+const getReviewsByMovie = async (req, res) => {
+    try {
+        console.log(req.params);
+        const { movieId } = req.params;
+
+        // Get reviews for the specified movie
+        const reviews = await prisma.review.findMany({
+            where: { movieId: parseInt(movieId) },
+            include: {
+                user: true, // Include the associated user information
+            },
+        });
+
+        if (!reviews) {
+            return res.status(404).json({ error: 'Review not found' });
+        }
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const getReviewsByUser = async (req, res) => {
+    try {
+        console.log(req.params);
+        const { userId } = req.params;
+
+        // Get reviews for the specified movie
+        const reviews = await prisma.review.findMany({
+            where: { userId: parseInt(userId) },
+        });
+
+        if (!reviews) {
+            return res.status(404).json({ error: 'Review not found' });
+        }
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 // Create a new review
 const createReview = async (req, res) => {
+    const auth0Id = req.auth.payload.sub;
     try {
-        const { content, userId, movieId } = req.body;
+        const { content, movieId } = req.body;
 
         // Check if the associated user and movie exist
         const user = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { auth0Id },
         });
 
         const movie = await prisma.movie.findUnique({
@@ -24,8 +72,12 @@ const createReview = async (req, res) => {
         const review = await prisma.review.create({
             data: {
                 content,
-                userId,
-                movieId,
+                user: {
+                    connect: { auth0Id }
+                },
+                movie: {
+                    connect: { id: movieId }
+                }
             },
         });
 
@@ -38,13 +90,23 @@ const createReview = async (req, res) => {
 
 // Get all reviews
 const getReviews = async (req, res) => {
-    try {
-        const reviews = await prisma.review.findMany();
-        res.status(200).json(reviews);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    const auth0Id = req.auth.payload.sub;
+
+    // console.log(req.auth)
+
+    const user = await prisma.user.findUnique({
+        where: {
+            auth0Id,
+        },
+    });
+
+    const reviews = await prisma.review.findMany({
+        where: {
+            userId: user.id,
+        },
+    });
+
+    res.json(reviews);
 };
 
 // Update a review by ID
@@ -86,4 +148,6 @@ module.exports = {
     getReviews,
     updateReview,
     deleteReview,
+    getReviewsByMovie,
+    getReviewsByUser,
 };
