@@ -15,6 +15,7 @@ const getReviewsByMovie = async (req, res) => {
             where: { movieId: parseInt(movieId) },
             include: {
                 user: true, // Include the associated user information
+                movie: true,
             },
         });
 
@@ -103,6 +104,10 @@ const getReviews = async (req, res) => {
     const reviews = await prisma.review.findMany({
         where: {
             userId: user.id,
+        },
+        include: {
+            user: true, // Include the associated user information
+            movie: true,
         },
     });
 

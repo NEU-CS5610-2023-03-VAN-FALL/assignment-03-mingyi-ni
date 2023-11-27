@@ -19,7 +19,7 @@ const AppRouter = () => {
                 <Route path="/verify-user" element={<VerifyUser />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/auth-debugger" element={<AuthDebuggerPage />} />
-                <Route path="/movie/:movieId" element={<MovieDetailPage />} />
+                <Route path="/details/:movieId" element={<MovieDetailPage />} />
                 <Route path="/reviews" element={<UserReviewPage />} />
             </Routes>
         </Router>
