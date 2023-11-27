@@ -5,9 +5,13 @@ const prisma = new PrismaClient();
 
 // Get all users
 const getUsers = async (req, res) => {
+    const auth0Id = req.auth.payload.sub;
     try {
-        const users = await prisma.user.findMany();
-        res.status(200).json(users);
+        const user = await prisma.user.findUnique({
+            where: { auth0Id },
+        });
+        //console.log(user);
+        res.status(200).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -16,13 +20,13 @@ const getUsers = async (req, res) => {
 
 // Update a user by ID
 const updateUser = async (req, res) => {
+    const auth0Id = req.auth.payload.sub;
     try {
-        const { id } = req.params;
-        const { username } = req.body;
+        const { name } = req.body;
 
         const updatedUser = await prisma.user.update({
-            where: { id: parseInt(id) },
-            data: { username },
+            where: { auth0Id },
+            data: { name },
         });
 
         res.status(200).json(updatedUser);
