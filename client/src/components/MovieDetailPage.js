@@ -13,7 +13,7 @@ const MovieDetailPage = () => {
     const navigate = useNavigate();
     const [modifiedReviewContent, setModifiedReviewContent] = useState('');
     const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-
+    const [modifiedReviewId, setModifiedReviewId] = useState(null);
 
 
     const isCurrentUser = (review) => {
@@ -130,6 +130,7 @@ const MovieDetailPage = () => {
     const handleReviewModify = (review) => {
         // Open the modify modal and pre-fill the input with the current review content
         setIsModifyModalOpen(true);
+        setModifiedReviewId(review.id);
         setModifiedReviewContent(review.content);
     };
 
@@ -196,19 +197,23 @@ const MovieDetailPage = () => {
                                 <p className="card-text">{review.content}</p>
                                 {isCurrentUser(review) && (
                                     <div>
-                                        <button className="btn btn-primary ml-2"
-                                                onClick={() =>handleReviewModify(review)}>
+                                        <button
+                                            className="btn btn-primary ml-2"
+                                            onClick={() => handleReviewModify(review)}
+                                        >
                                             Modify
                                         </button>
-                                        <button className="btn btn-danger"
-                                                onClick={() => handleReviewDelete(review)}>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => handleReviewDelete(review)}
+                                        >
                                             Delete
                                         </button>
                                     </div>
                                 )}
                             </div>
 
-                            {isModifyModalOpen && (
+                            {isModifyModalOpen && review.id === modifiedReviewId && (
                                 <div className="card bg-dark text-white mb-3">
                                     <div className="card-body">
                                         <div className="mb-3">
@@ -230,7 +235,6 @@ const MovieDetailPage = () => {
                                     </div>
                                 </div>
                             )}
-
                         </div>
                     ))}
                 </div>
