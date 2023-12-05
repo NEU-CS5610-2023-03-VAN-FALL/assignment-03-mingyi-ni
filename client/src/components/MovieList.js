@@ -8,7 +8,7 @@ const MovieList = ({ movies }) => {
                 {movies.map((movie) => (
                     <div key={movie.imdbID} className="col mb-4">
                         <Link to={`/details/${movie.imdbID}`} className="text-decoration-none">
-                            <div className="card h-100">
+                            <div className="card h-100 bg-dark text-white">
                                 <img
                                     src={movie.Poster}
                                     alt={`${movie.Title} Poster`}
