@@ -1,2 +1,3 @@
 # assignment-03
-check canvas for instructions
+accessibility check
+![Local Image](./accessibility_check.jpg)

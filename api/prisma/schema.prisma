@@ -1,0 +1,37 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  auth0Id      String   @unique @default("")
+  name         String?
+  reviews  Review[]
+}
+
+model Review {
+  id      Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content     String   @db.VarChar(255)
+  user    User    @relation(fields: [userId], references: [id])
+  movie   Movie   @relation(fields: [movieId], references: [id])
+  userId  Int
+  movieId Int
+}
+
+model Movie {
+  id       Int      @id @default(autoincrement())
+  title    String?
+  imdbId String @unique
+  // Add more attributes as needed
+  reviews  Review[]
+}
