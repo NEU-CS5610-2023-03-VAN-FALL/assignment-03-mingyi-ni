@@ -10,7 +10,7 @@ const UserReviewPage = () => {
     useEffect(() => {
         const fetchMovieDetails = async (movieId) => {
             try {
-                const response = await fetch(`http://www.omdbapi.com/?apikey=bc9a94cb&i=${movieId}`);
+                const response = await fetch(`http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_DETAIL}}&i=${movieId}`);
                 const data = await response.json();
 
                 // Use the functional form of setMovieDetails to update based on previous state

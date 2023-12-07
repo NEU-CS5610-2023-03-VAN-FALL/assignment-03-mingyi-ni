@@ -22,7 +22,7 @@ const MovieDetailPage = () => {
 
     const fetchMovieDetails = async () => {
         try {
-            const response = await fetch(`http://www.omdbapi.com/?apikey=bc9a94cb&i=${movieId}`);
+            const response = await fetch(`http://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB_REVIEW}&i=${movieId}`);
             const movieData = await response.json();
             setMovie(movieData);
         } catch (error) {
